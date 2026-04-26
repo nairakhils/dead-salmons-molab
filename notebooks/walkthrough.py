@@ -15,14 +15,14 @@ __generated_with = "0.23.3"
 app = marimo.App(width="medium")
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import marimo as mo
 
     return (mo,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     import asyncio
     import io
@@ -53,7 +53,7 @@ def _():
     return IN_WASM, asyncio, io, np, pd
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _():
     # Project modules. Imported in one cell so reactive cells below
     # depend on them directly.
@@ -74,13 +74,13 @@ def _():
     )
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(plots):
     plots.set_competition_style()
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 async def _(IN_WASM, asyncio, io, np):
     # Dual-path artefact loader: filesystem first (local + cloud
     # molab), HTTPS fallback for /wasm (Pyodide). Mirrors the
@@ -140,7 +140,7 @@ async def _(IN_WASM, asyncio, io, np):
     )
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     # Dead Salmons, False Discoveries, and Interpretability
@@ -152,7 +152,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 1. Finding signal in pure noise
@@ -162,7 +162,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(lead_sweep, mo):
     _feature_counts = [int(m) for m in lead_sweep["feature_counts"]]
     _default_m = 10000 if 10000 in _feature_counts else _feature_counts[-1]
@@ -188,7 +188,7 @@ def _(lead_sweep, mo):
     return lead_correction, lead_m_slider, lead_show_expected
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     lead_correction,
     lead_m_slider,
@@ -248,7 +248,7 @@ def _(
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.callout(
         mo.md(
@@ -264,7 +264,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 2. Paper claim, notebook demonstration, extension
@@ -274,7 +274,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.vstack([
         mo.callout(
@@ -319,7 +319,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 3. The dead-salmon heatmap
@@ -329,7 +329,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     salmon_correction = mo.ui.dropdown(
         options={
@@ -348,7 +348,7 @@ def _(mo):
     return salmon_correction, salmon_display
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(default_heatmaps, mo, plots, salmon_correction, salmon_display):
     _correction = str(salmon_correction.value)
     _mask_key = {
@@ -392,7 +392,7 @@ def _(default_heatmaps, mo, plots, salmon_correction, salmon_display):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 4. Sparse signal among nulls
@@ -402,7 +402,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, sparse_sweep):
     _es = [float(x) for x in sparse_sweep["effect_sizes"]]
     _ns = [int(x) for x in sparse_sweep["n_signal_values"]]
@@ -429,7 +429,7 @@ def _(mo, sparse_sweep):
     return sparse_correction, sparse_effect, sparse_n_signal
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     default_heatmaps,
     mo,
@@ -492,7 +492,7 @@ def _(
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 5. Researcher degrees-of-freedom sandbox
@@ -502,7 +502,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, p_hacking_sweep):
     _choices = [int(c) for c in p_hacking_sweep["n_choices"]]
     rdof_n_choices = mo.ui.dropdown(
@@ -526,7 +526,7 @@ def _(mo, p_hacking_sweep):
     return rdof_correction, rdof_n_choices, rdof_run, rdof_subset_search
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo, np, p_hacking_sweep, plots, rdof_n_choices):
     _fig = plots.plot_p_hacking_sweep(
         p_hacking_sweep=p_hacking_sweep,
@@ -551,7 +551,7 @@ def _(mo, np, p_hacking_sweep, plots, rdof_n_choices):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     mo,
     rdof_correction,
@@ -598,7 +598,7 @@ def _(
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 6. Ranked feature table
@@ -608,7 +608,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     table_effect = mo.ui.slider(
         start=0.0, stop=1.5, step=0.1, value=0.4,
@@ -629,7 +629,7 @@ def _(mo):
     return table_effect, table_n_features, table_n_signal, table_seed
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     benjamini_hochberg,
     bonferroni,
@@ -668,7 +668,7 @@ def _(
     return (feature_df,)
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(
     feature_df,
     mo,
@@ -718,7 +718,7 @@ def _(
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 7. Practical guardrails
@@ -728,7 +728,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     - Define the **family of tests** before looking at any p-values: the relevant denominator is the count of tests considered, not the count reported.
@@ -741,7 +741,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.callout(
         mo.md(
@@ -759,7 +759,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md("""
     ## 8. Limits
@@ -769,7 +769,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(mo):
     mo.md(r"""
     - The demonstrations use synthetic data only; no interpretability method is run on a real network.
@@ -780,7 +780,7 @@ def _(mo):
     return
 
 
-@app.cell
+@app.cell(hide_code=True)
 def _(manifest, mo):
     _profile = manifest.get("profile", "?")
     _alpha = manifest.get("alpha", "?")
