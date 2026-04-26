@@ -1,0 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Environments
+.venv/
+venv/
+.env
+
+# OS / editor
+.DS_Store
+.ipynb_checkpoints/
+
+# Marimo
+.marimo/
+
+# Logs
+*.log
+
+# Local-only working dirs (extraction notes, scratch, downloaded PDFs, exports)
+scratch/
+tmp/
+local/
+downloads/
+paper/
+*.pdf
+*.html
+*.ipynb
+
+# Results dir: keep committed artefacts (.npz, .json), drop scratch/temps/logs
+results/*.tmp
+results/*.log
+results/raw_*
+results/debug_*
+results/scratch_*

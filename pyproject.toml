@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "dead-salmons-molab"
+version = "0.0.1"
+description = "Marimo molab notebook on multiple testing and false discoveries in AI interpretability, after arXiv:2512.18792."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "marimo>=0.23,<0.24",
+    "numpy",
+    "scipy",
+    "matplotlib",
+    "pandas",
+    "pytest",
+]
+
+[tool.setuptools]
+packages = ["src"]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+testpaths = ["tests"]
+addopts = "-q"

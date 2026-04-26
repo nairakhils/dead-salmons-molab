@@ -1,0 +1,86 @@
+{
+  "created_utc": "2026-04-26T15:36:43+00:00",
+  "profile": "full",
+  "alpha": 0.05,
+  "seeds": {
+    "lead": 1,
+    "sparse": 2,
+    "p_hacking": 3,
+    "heatmaps_null": 4,
+    "heatmaps_signal": 5
+  },
+  "parameters": {
+    "lead": {
+      "feature_counts": [
+        20,
+        50,
+        100,
+        200,
+        500,
+        1000,
+        2000,
+        5000,
+        10000
+      ],
+      "n_repeats": 500,
+      "n_samples": 40
+    },
+    "sparse": {
+      "n_features": 1000,
+      "n_signal_values": [
+        0,
+        5,
+        20,
+        50
+      ],
+      "effect_sizes": [
+        0.0,
+        0.25,
+        0.5,
+        0.75,
+        1.0
+      ],
+      "n_repeats": 100,
+      "n_samples": 60
+    },
+    "p_hacking": {
+      "n_choices": [
+        1,
+        2,
+        5,
+        10,
+        20,
+        50,
+        100
+      ],
+      "n_samples": 60,
+      "n_features": 200,
+      "n_repeats": 200
+    },
+    "heatmaps": {
+      "height": 32,
+      "width": 32,
+      "n_signal_blocks": 3,
+      "effect_size": 1.0,
+      "n_samples_per_pixel": 40
+    }
+  },
+  "artifacts": [
+    "lead_false_positive_sweep.npz",
+    "sparse_signal_sweep.npz",
+    "p_hacking_sweep.npz",
+    "default_heatmaps.npz"
+  ],
+  "artifact_sizes_bytes": {
+    "lead_false_positive_sweep.npz": 2817,
+    "sparse_signal_sweep.npz": 2561,
+    "p_hacking_sweep.npz": 2328,
+    "default_heatmaps.npz": 18954
+  },
+  "build_seconds": {
+    "lead": 6.71,
+    "sparse": 2.156,
+    "p_hacking": 11.283,
+    "heatmaps": 0.003
+  }
+}
