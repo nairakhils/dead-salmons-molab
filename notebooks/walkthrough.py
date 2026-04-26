@@ -13,29 +13,40 @@ def _():
 
 @app.cell
 def _():
+    import asyncio
+    import io
     import sys
     from pathlib import Path
 
     import numpy as np
     import pandas as pd
 
-    # Make the repo's src/ importable when the notebook is launched from
-    # either ./ or ./notebooks/, locally or in cloud molab. We never use
-    # private machine paths.
+    # WASM detection. The molab cloud runtime gives us a real
+    # filesystem; the /wasm runtime via Pyodide does not, so we have
+    # to fetch artefacts over HTTPS in that case.
+    try:
+        import pyodide  # noqa: F401
+        IN_WASM = True
+    except ImportError:
+        IN_WASM = False
+
+    # Make the repo's src/ importable when the notebook is launched
+    # from either ./ or ./notebooks/, locally or in cloud molab. We
+    # never use private machine paths.
     _here = Path.cwd()
     for _candidate in (_here, _here.parent, _here.parent.parent):
         if (_candidate / "src" / "__init__.py").exists():
             if str(_candidate) not in sys.path:
                 sys.path.insert(0, str(_candidate))
             break
-    return np, pd
+    return IN_WASM, asyncio, io, np, pd
 
 
 @app.cell
 def _():
     # Project modules. Imported in one cell so reactive cells below
     # depend on them directly.
-    from src import io_utils, plots
+    from src import plots
     from src.researcher_freedom import run_single_analysis
     from src.stats_tests import (
         benjamini_hochberg,
@@ -47,7 +58,6 @@ def _():
         benjamini_hochberg,
         bonferroni,
         feature_labels,
-        io_utils,
         plots,
         run_single_analysis,
     )
@@ -60,16 +70,56 @@ def _(plots):
 
 
 @app.cell
-def _(io_utils):
-    # All four precomputed artefacts plus the manifest. Anything heavy
-    # in the notebook reads from these dicts; live recomputation is
-    # gated behind run buttons.
-    artifacts = io_utils.load_artifacts()
-    lead_sweep = artifacts["lead_false_positive_sweep"]
-    sparse_sweep = artifacts["sparse_signal_sweep"]
-    p_hacking_sweep = artifacts["p_hacking_sweep"]
-    default_heatmaps = artifacts["default_heatmaps"]
-    manifest = artifacts["manifest"]
+async def _(IN_WASM, asyncio, io, np):
+    # Dual-path artefact loader: filesystem first (local + cloud
+    # molab), HTTPS fallback for /wasm (Pyodide). Mirrors the
+    # geometry-of-noise-molab pattern.
+    import json as _json
+
+    DATA_BASE_REMOTE = (
+        "https://raw.githubusercontent.com/nairakhils/"
+        "dead-salmons-molab/main/results"
+    )
+    DATA_NAMES = (
+        "lead_false_positive_sweep.npz",
+        "sparse_signal_sweep.npz",
+        "p_hacking_sweep.npz",
+        "default_heatmaps.npz",
+    )
+
+    async def _fetch_bytes(name):
+        if not IN_WASM:
+            for _prefix in ("results", "../results"):
+                try:
+                    with open(f"{_prefix}/{name}", "rb") as _f:
+                        return _f.read()
+                except FileNotFoundError:
+                    continue
+        if IN_WASM:
+            import pyodide.http
+            _resp = await pyodide.http.pyfetch(f"{DATA_BASE_REMOTE}/{name}")
+            return await _resp.bytes()
+        import urllib.request
+        return urllib.request.urlopen(f"{DATA_BASE_REMOTE}/{name}").read()
+
+    async def _fetch_npz(name):
+        _b = await _fetch_bytes(name)
+        with np.load(io.BytesIO(_b), allow_pickle=True) as _z:
+            return {_k: np.asarray(_z[_k]) for _k in _z.files}
+
+    _loaded = await asyncio.gather(*[_fetch_npz(_n) for _n in DATA_NAMES])
+    (
+        lead_sweep,
+        sparse_sweep,
+        p_hacking_sweep,
+        default_heatmaps,
+    ) = _loaded
+
+    try:
+        _manifest_bytes = await _fetch_bytes("manifest.json")
+        manifest = _json.loads(_manifest_bytes.decode("utf-8"))
+    except Exception:
+        manifest = {"profile": "?", "alpha": 0.05}
     return (
         default_heatmaps,
         lead_sweep,
